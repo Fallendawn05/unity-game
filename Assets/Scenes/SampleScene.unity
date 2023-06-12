@@ -1815,13 +1815,13 @@ MonoBehaviour:
   crouchSpeed: 4
   airSpeedMultiplier: 0.3
   climbSpeed: 5
-  normalGravity: -13
+  normalGravity: -15
   wallRunGravity: -1
   jumpHeight: 5
-  slideSpeedIncrease: 2.5
-  wallRunSpeedIncrease: 2
+  slideSpeedIncrease: 2
+  wallRunSpeedIncrease: 1.6
   slideSpeedDecrease: 3
-  wallRunSpeedDecrease: 1.5
+  wallRunSpeedDecrease: 1.4
   maxSlideTimer: 2
   maxClimbTimer: 1
   maxWallJumpTimer: 0.15

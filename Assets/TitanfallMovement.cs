@@ -22,6 +22,7 @@ public float sprintSpeed;
 public float crouchSpeed;
 public float airSpeedMultiplier;
 public float climbSpeed;
+public float speedlimit;
 
 float gravity;
 public float normalGravity;
@@ -279,6 +280,8 @@ void AirMovement()
         }
     }
 
+    if (speed > speedlimit)
+        DecreaseSpeed(speed);
     move = Vector3.ClampMagnitude( move, speed );
 }
 
