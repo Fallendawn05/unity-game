@@ -1815,6 +1815,7 @@ MonoBehaviour:
   crouchSpeed: 4
   airSpeedMultiplier: 0.3
   climbSpeed: 5
+  speedlimit: 33
   normalGravity: -15
   wallRunGravity: -1
   jumpHeight: 5
