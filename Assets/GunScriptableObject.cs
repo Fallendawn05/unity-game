@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Pool;
 
 [CreateAssetMenu(fileName = "Gun", menuName = "Guns/Gun", order = 0)]
 
@@ -18,19 +19,19 @@ public class GunScriptableObject : ScriptableObject
     private MonoBehaviour ActiveMonoBehaviour;
     private GameObject Model;
     private float LastShootTime;
-    private PartivleSystem ShootSystem;
+    private ParticleSystem ShootSystem;
     private ObjectPool<TrailRenderer> TrailPool;
 
     public void Spawn(Transform Parent, MonoBehaviour ActiveMonoBehaviour)
     {
         this.ActiveMonoBehaviour = ActiveMonoBehaviour;
-        LastShootTime = 0; // in editor this will not be properly reset, in build it's fine
+        LastShootTime = 0; // in editor, this will not be properly reset, in build it's fine
         TrailPool = new ObjectPool<TrailRenderer>(CreateTrail);
 
         Model = Instantiate(ModelPrefab);
         Model.transform.SetParent(Parent, false);
         Model.transform.localPosition = SpawnPoint;
-        Model.transform.localRotation = Quaternion.Euler(spawnRotation);
+        Model.transform.localRotation = Quaternion.Euler(SpawnRotation);
 
         ShootSystem = Model.GetComponent<ParticleSystem>();
     }
@@ -41,7 +42,7 @@ public class GunScriptableObject : ScriptableObject
         {
             LastShootTime = Time.time;
             ShootSystem.Play();
-            Vector3 shootDirection = ShootSystem.transform.forward
+            Vector3 ShootDirection = ShootSystem.transform.forward
                 + new Vector3(
                     Random.Range(
                         -ShootConfig.Spread.x,
@@ -54,20 +55,20 @@ public class GunScriptableObject : ScriptableObject
                     Random.Range(
                         -ShootConfig.Spread.z,
                         ShootConfig.Spread.z
-                    ),
+                    )
                 );
-            shootDirection.Normalize();
+            ShootDirection.Normalize();
 
             if (Physics.Raycast(
                 ShootSystem.transform.position,
-                shootDirection,
+                ShootDirection,
                 out RaycastHit hit,
                 float.MaxValue,
                 ShootConfig.Hitmask
             ))
             {
-                ActiveMonoBehaviour.StartCoroutine (
-                    PlayTrial(
+                ActiveMonoBehaviour.StartCoroutine(
+                    PlayTrail(
                         ShootSystem.transform.position,
                         hit.point,
                         hit
@@ -76,10 +77,10 @@ public class GunScriptableObject : ScriptableObject
             }
             else
             {
-                ActiveMonoBehaviour.StartCoroutine (
-                    PlayTrial(
+                ActiveMonoBehaviour.StartCoroutine(
+                    PlayTrail(
                         ShootSystem.transform.position,
-                        ShootSystem.transform.position + (shootDirection * TrailConfig.MissDistance),
+                        ShootSystem.transform.position + (ShootDirection * TrailConfig.MissDistance),
                         new RaycastHit()
                     )
                 );
@@ -87,23 +88,23 @@ public class GunScriptableObject : ScriptableObject
         }
     }
 
-    private IEnumerator PlayTrial (Vector3 StartPoint, Vector3 EndPoint, RaycastHit Hit)
+    private IEnumerator PlayTrail(Vector3 StartPoint, Vector3 EndPoint, RaycastHit Hit)
     {
         TrailRenderer instance = TrailPool.Get();
         instance.gameObject.SetActive(true);
         instance.transform.position = StartPoint;
-        yield retrun null; // avoid position carry-over from last frame if reused
+        yield return null; // avoid position carry-over from last frame if reused
 
         instance.emitting = true;
 
-        float Disance = Vector3.Disance(StartPoint, EndPoint);
-        float remainingDistance = distance;
+        float Distance = Vector3.Distance(StartPoint, EndPoint);
+        float remainingDistance = Distance;
         while (remainingDistance > 0)
         {
             instance.transform.position = Vector3.Lerp(
                 StartPoint,
-                EndPOint,
-                Mathf.Clamp01 (1 - (remainingDistance / distane))
+                EndPoint,
+                Mathf.Clamp01(1 - (remainingDistance / Distance))
             );
             remainingDistance -= TrailConfig.SimulationSpeed * Time.deltaTime;
 
@@ -113,7 +114,6 @@ public class GunScriptableObject : ScriptableObject
         instance.transform.position = EndPoint;
 
         yield return new WaitForSeconds(TrailConfig.Duration);
-        yield return null;
         instance.emitting = false;
         instance.gameObject.SetActive(false);
         TrailPool.Release(instance);
@@ -125,14 +125,13 @@ public class GunScriptableObject : ScriptableObject
         TrailRenderer trail = instance.AddComponent<TrailRenderer>();
         trail.colorGradient = TrailConfig.Color;
         trail.material = TrailConfig.Material;
-        trail.widthCurve = Trailonfig.WidthCurve;
+        trail.widthCurve = TrailConfig.WidthCurve;
         trail.time = TrailConfig.Duration;
-        trail.MinVertexDistance = TrailConfig.MinVertexDistancel;
+        trail.minVertexDistance = TrailConfig.MinVertexDistance;
 
         trail.emitting = false;
-        trail.shadowCastingMode = unityEngine.Rendering.ShadowCastingMode.Off;
+        trail.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 
-        retrun trail;
+        return trail;
     }
-
 }
