@@ -21,6 +21,12 @@ public class PlayerGunSelector : MonoBehaviour
     {
         GunScriptableObject gun = Guns.Find(gun => gun.Type == Gun);
 
+        if (gun == null)
+        {
+            Debug.LogError($"No GunScriptableObject found for GunType: {gun}");
+            return;
+        }
+
         ActiveGun = gun;
         gun.Spawn(GunParent, this);
     }

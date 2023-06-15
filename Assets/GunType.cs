@@ -1,5 +1,5 @@
 public enum GunType
 {
-   GLock,
+   Glock,
    M4A1
 }

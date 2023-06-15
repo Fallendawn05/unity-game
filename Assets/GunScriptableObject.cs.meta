@@ -3,7 +3,10 @@ guid: 074c737401f394f3db476d6b539ed639
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - ModelPrefab: {instanceID: 0}
+  - ShootConfig: {instanceID: 0}
+  - TrailConfig: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
